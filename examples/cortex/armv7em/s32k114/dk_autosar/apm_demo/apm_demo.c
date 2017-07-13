@@ -51,7 +51,7 @@ TASK(apm_demo)
 TASK(light_monitor)
 {
   uint32_t adcResultInMv = 0;
-#if 1
+  
   convertAdcChan(LIGHT_ADC_CH);
   while (adc_complete() == 0);
   adcResultInMv = read_adc_chx();
@@ -66,10 +66,9 @@ TASK(light_monitor)
   }
   STATUS_LED_ON(LIGHT_STAT_LED);
   FLEXCAN0_transmit_msg(LIGHT_CAN_ID, 0, adcResultInMv);
-  delay(2);
+  delay(20);
   STATUS_LED_OFF(LIGHT_STAT_LED);
     
-#endif
   TerminateTask();
 }
 #define APP_Task_light_monitor_STOP_SEC_CODE
@@ -80,7 +79,7 @@ TASK(light_monitor)
 TASK(speed_monitor)
 {
   uint32_t adcResultInMv = 0;
-#if 1
+
   convertAdcChan(SPEED_ADC_CH);
   while (adc_complete() == 0);
   adcResultInMv = read_adc_chx() / 10;
@@ -89,9 +88,9 @@ TASK(speed_monitor)
 
   STATUS_LED_ON(SPEED_STAT_LED);
   FLEXCAN0_transmit_msg(SPEED_CAN_ID, 0, adcResultInMv);
-  delay(2);
+  delay(20);
   STATUS_LED_OFF(SPEED_STAT_LED);
-#endif 
+
   TerminateTask();
 }
 #define APP_Task_speed_monitor_STOP_SEC_CODE

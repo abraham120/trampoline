@@ -61,7 +61,7 @@ static FUNC(uint32, OS_CODE) tpl_configure_systick(
 
 FUNC(void, OS_CODE) tpl_set_systick_timer()
 {
-  if (tpl_configure_systick(SystemCoreClock / 1000, OS_ISR_PRIO_UNSHIFTED) != E_OK)
+  if (tpl_configure_systick(80000000 / 1000, OS_ISR_PRIO_UNSHIFTED) != E_OK)
   {
     /* Failed to initialize Systick, fall back in an infinite loop */
     while(1);

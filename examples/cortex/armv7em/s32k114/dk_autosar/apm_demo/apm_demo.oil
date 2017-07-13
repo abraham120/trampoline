@@ -63,8 +63,8 @@ CPU apm_demo {
     };
     AUTOSTART = TRUE {
       APPMODE = std;
-      ALARMTIME = 28;
-      CYCLETIME = 100;
+      ALARMTIME = 280;
+      CYCLETIME = 1000;
     };
   };
 
@@ -82,8 +82,8 @@ CPU apm_demo {
     };
     AUTOSTART = TRUE {
       APPMODE = std;
-      ALARMTIME = 10;
-      CYCLETIME = 10;
+      ALARMTIME = 100;
+      CYCLETIME = 100;
     };
   };
 
@@ -101,8 +101,8 @@ CPU apm_demo {
     };
     AUTOSTART = TRUE {
       APPMODE = std;
-      ALARMTIME = 5;
-      CYCLETIME = 10;
+      ALARMTIME = 50;
+      CYCLETIME = 100;
     };
   };
 };
