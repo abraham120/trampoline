@@ -1,0 +1,299 @@
+IMPLEMENTATION s32k144 {
+
+  DEVICE_KIND [] {
+    STRUCT {
+      UINT32 OFFSET;
+      ENUM [ BYTE, HALFWORD, WORD, DOUBLEWORD ] SIZE;
+      STRUCT {
+        UINT32 LOC;
+      } BIT [];
+      STRUCT {
+        UINT32 START;
+        UINT32 STOP;
+      } FIELD [];
+    } REGISTER [];
+    STRUCT {
+      IDENTIFIER ENABLE [];
+      BOOLEAN ACK = FALSE;
+    } EVENT [];
+  };
+  
+  DEVICE [] {
+    DEVICE_KIND_TYPE KIND;
+    UINT32 ADDRESS;
+    INTERRUPT_TYPE VECTOR;
+  };
+};
+
+CPU s32k144 {
+  OS features {
+    ISR2_PRIORITY_MASKING = TRUE;
+  };
+
+  LIBRARY gpt {
+    PATH = "cortex/armv7em/s32k144/drivers";
+    CHEADER = "fsl_lpit_driver.h";
+    CFILE = "fsl_lpit_driver.c";
+  };
+        
+  CORTEX s32k144 {
+    PRIO_BITS = 4;
+    CLOCK = 160000000;
+  };
+        
+  /*
+   * S32K LPUART device
+   */
+  DEVICE_KIND LPUART {
+    REGISTER VERID {
+      OFFSET = 0x00;
+      SIZE = WORD;
+      FIELD MAJOR   { START = 31; STOP = 24; };
+      FIELD MINOR   { START = 23; STOP = 16; };
+      FIELD FEATURE { START = 15; STOP = 0; };
+    } : "Version ID Register";
+    REGISTER PARAM {
+      OFFSET = 0x04;
+      SIZE = WORD;
+      FIELD RXFIFO { START = 15; STOP = 8; };
+      FIELD TXFIFO { START = 7; STOP = 0; };
+    } : "Parameter Register";
+    REGISTER GLOBAL {
+      OFFSET = 0x08;
+      SIZE = WORD;
+      BIT RST { LOC = 1; };
+    } : "LPUART Global Register";
+    REGISTER PINCFG {
+      OFFSET = 0x0C;
+      SIZE = WORD;
+      FIELD TRGSEL { START = 1; STOP = 0; };
+    } : "LPUART Pin Configuration Register";
+    REGISTER BAUD {
+      OFFSET = 0x10;
+      SIZE = WORD;
+      BIT MAEN1     { LOC = 31; };
+      BIT MAEN2     { LOC = 30; };
+      BIT M10       { LOC = 29; };
+      FIELD OSR     { START = 28; STOP = 24; };
+      BIT TDMAE     { LOC = 23; };
+      BIT RDMAE     { LOC = 21; };
+      BIT RIDMAE    { LOC = 20; };
+      FIELD MATCFG  { START = 19; STOP = 18; };
+      BIT BOTHEDGE  { LOC = 17; };
+      BIT RESYNCDIS { LOC = 16; };
+      BIT LBKDIE    { LOC = 15; };
+      BIT RXEDGIE   { LOC = 14; };
+      BIT SBNS      { LOC = 13; };
+      FIELD SBR     { START = 12; STOP = 0; };
+    } : "LPUART Baud Rate Register";
+    REGISTER STAT {
+      OFFSET = 0x14;
+      SIZE = WORD;
+      BIT LBKDIF    { LOC = 31; };
+      BIT RXEDGIF   { LOC = 30; };
+      BIT MSBF      { LOC = 29; };
+      BIT RXINV     { LOC = 28; };
+      BIT RWUID     { LOC = 27; };
+      BIT BRK13     { LOC = 26; };
+      BIT LBKDE     { LOC = 25; };
+      BIT RAF       { LOC = 24; };
+      BIT TDRE      { LOC = 23; };
+      BIT TC        { LOC = 22; };
+      BIT RDRF      { LOC = 21; };
+      BIT IDLE      { LOC = 20; };
+      BIT OR        { LOC = 19; };
+      BIT NF        { LOC = 18; };
+      BIT FE        { LOC = 17; };
+      BIT PF        { LOC = 16; };
+      BIT MA1F      { LOC = 15; };
+      BIT MA2F      { LOC = 14; };
+    } : "LPUART Status Register";
+    REGISTER CTRL {
+      OFFSET = 0x18;
+      SIZE = WORD;
+      BIT R8T9      { LOC = 31; };
+      BIT R9T8      { LOC = 30; };
+      BIT TXDIR     { LOC = 29; };
+      BIT TXINV     { LOC = 28; };
+      BIT ORIE      { LOC = 27; };
+      BIT NEIE      { LOC = 26; };
+      BIT FEIE      { LOC = 25; };
+      BIT PEIE      { LOC = 24; };
+      BIT TIE       { LOC = 23; };
+      BIT TCIE      { LOC = 22; };
+      BIT RIE       { LOC = 21; };
+      BIT ILIE      { LOC = 20; };
+      BIT TE        { LOC = 19; };
+      BIT RE        { LOC = 18; };
+      BIT RWU       { LOC = 17; };
+      BIT SBK       { LOC = 16; };
+      BIT MA1IE     { LOC = 15; };
+      BIT MA2IE     { LOC = 14; };
+      BIT M7        { LOC = 11; };
+      FIELD IDLECFG { START = 10; STOP = 8; };
+      BIT LOOPS     { LOC = 7; };
+      BIT DOZEEN    { LOC = 6; };
+      BIT RSRC      { LOC = 5; };
+      BIT M         { LOC = 4; };
+      BIT WAKE      { LOC = 3; };
+      BIT ILT       { LOC = 2; };
+      BIT PE        { LOC = 1; };
+      BIT PT        { LOC = 0; };
+    } : "LPUART Control Register";
+    REGISTER DATA {
+      OFFSET = 0x1C;
+      SIZE = WORD;
+      BIT NOISY   { LOC = 15; };
+      BIT PARITYE { LOC = 14; };
+      BIT FRETSC  { LOC = 13; };
+      BIT RXEMPT  { LOC = 12; };
+      BIT IDLINE  { LOC = 11; };
+      BIT R9T9    { LOC = 9; };
+      BIT R8T8    { LOC = 8; };
+      BIT R7T7    { LOC = 7; };
+      BIT R6T6    { LOC = 6; };
+      BIT R5T5    { LOC = 5; };
+      BIT R4T4    { LOC = 4; };
+      BIT R3T3    { LOC = 3; };
+      BIT R2T2    { LOC = 2; };
+      BIT R1T1    { LOC = 1; };
+      BIT R0T0    { LOC = 0; };
+    } : "LPUART Data Register";
+    REGISTER MATCH {
+      OFFSET = 0x20;
+      SIZE = WORD;
+      FIELD MA2 { START = 25; STOP = 16; };
+      FIELD MA1 { START = 9; STOP = 0; };
+    } : "LPUART Match Address Register";
+    REGISTER MODIR {
+      OFFSET = 0x24;
+      SIZE = WORD;
+      BIT IREN       { LOC = 18; };
+      FIELD TNP      { START = 17; STOP = 16; };
+      FIELD RTSWATER { START = 9; STOP = 8; };
+      BIT TXCTSSRC   { LOC = 5; };
+      BIT TXCTSC     { LOC = 4; };
+      BIT RXRTSE     { LOC = 3; };
+      BIT TXRTSPOL   { LOC = 2; };
+      BIT TXRTSE     { LOC = 1; };
+      BIT TXCTSE     { LOC = 0; };
+    } : "LPUART Model IrDA Register";
+    REGISTER FIFO {
+      OFFSET = 0x28;
+      SIZE = WORD;
+      BIT TXEMPT        { LOC = 23; };
+      BIT RXEMPT        { LOC = 22; };
+      BIT TXOF          { LOC = 17; };
+      BIT RXUF          { LOC = 16; };
+      BIT TXFLUSH       { LOC = 15; };
+      BIT RXFLUSH       { LOC = 14; };
+      FIELD RXIDEN      { START = 12; STOP = 10; };
+      BIT TXOFE         { LOC = 9; };
+      BIT RXUFE         { LOC = 8; };
+      BIT TXFE          { LOC = 7; };
+      FIELD TXFIFOSIZE  { START = 6; STOP = 4; };
+      BIT RXFE          { LOC = 3; };
+      FIELD RXFIFOSIZE  { START = 2; STOP = 0; };
+    } : "LPUART FIFO Register";
+    REGISTER WATER {
+      OFFSET = 0x2C;
+      SIZE = WORD;
+      FIELD RXCOUNT { START = 26; STOP = 24; };
+      FIELD RXWATER { START = 17; STOP = 16; };
+      FIELD TXCOUNT { START = 10; STOP = 8; };
+      FIELD TXWATER { START = 1; STOP = 0; };
+    } : "LPUART Watermart Register";
+  };
+        
+  DEVICE LPUART0 {
+    KIND = LPUART;
+    ADDRESS = 0x4006A000;
+    VECTOR = LPUART0_IRQ;
+  };
+  
+  INTERRUPT_COUNT nb_it {
+    IT_TABLE_SIZE = 98;
+  };
+
+  INTERRUPT NMI {
+    SETPRIO = TRUE { NUMBER = -14; };
+  };
+  
+  INTERRUPT MemManage {
+    SETPRIO = TRUE { NUMBER = -12; };
+  };
+  
+  INTERRUPT BusFault {
+    SETPRIO = TRUE { NUMBER = -11; };
+  };
+  
+  INTERRUPT UsageFault {
+    SETPRIO = TRUE { NUMBER = -10; };
+  };
+  
+  INTERRUPT SVCall {
+    SETPRIO = TRUE { NUMBER = -5; };
+  };
+  
+  INTERRUPT DebugMonitor {
+    SETPRIO = TRUE { NUMBER = -4; };
+  };
+  
+  INTERRUPT PendSV {
+    SETPRIO = TRUE { NUMBER = -2; };
+  };
+  
+  INTERRUPT SysTick {
+    SETPRIO = TRUE { NUMBER = -1; };
+  };
+  
+  INTERRUPT LPUART0_IRQ {
+    VECT = 31;
+    SETPRIO = TRUE { NUMBER = 37; };
+    ACK = TRUE { TEMPLATE = TRUE { NAME = "uart_ack"; }; };
+    VECTOR_TYPE = HANDLER {
+      NAME = "LPUART0_Handler";
+      TEMPLATE = TRUE { NAME = "uart_dispatch"; };
+    };
+  } : "LPUART0 Rx/Tx Interrupt";
+  
+  INTERRUPT FPU_IRQ {
+    VECT = 17;
+    SETPRIO = TRUE { NUMBER = 81; };
+    VECTOR_TYPE = HANDLER {
+      NAME = "FPU_Handler";
+    };
+  } : "FPU global interrupt";
+
+  PLATFORM_FILES s32k144 {
+    PATH = "cortex/armv7em/s32k144";
+    CFILE = "tpl_memory_protection.c";
+    CFILE = "tpl_machine_s32k144.c";
+    CFILE = "startup_S32K144.c";
+    CFILE = "system_S32K144.c";
+    CFILE = "handlers_s32k144.c";
+  };
+
+  PLATFORM_FILES s32k144_std_libs_includes {
+    PATH = "cortex/armv7em/s32k144/drivers";
+  };
+
+  PLATFORM_FILES s32k144_cmsis {
+    PATH = "cortex/armv7em/s32k144/S32K144/include";
+  };
+
+  PLATFORM_FILES s32k144_std_libs_src {
+    PATH = "cortex/armv7em/s32k144/drivers";
+    CFILE = "clocks_and_modes.c";
+    CFILE = "fsl_interrupt_manager.c";
+  };
+
+  POSTBUILD all {
+    COMMAND buildbin {
+      TYPE = COPIER;
+      INPUT = TARGET;
+      OUTPUT = ".bin";
+      PREOPTION = "-O binary";
+    };
+  };
+};

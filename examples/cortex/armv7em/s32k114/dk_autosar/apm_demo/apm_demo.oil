@@ -1,0 +1,109 @@
+OIL_VERSION = "2.5";
+
+IMPLEMENTATION trampoline {
+
+    /* This fix the default STACKSIZE of tasks */
+    TASK {
+        UINT32 STACKSIZE = 300 ;
+    } ;
+
+    /* This fix the default STACKSIZE of ISRs */
+    ISR {
+        UINT32 STACKSIZE = 200 ;
+    } ;
+};
+
+CPU apm_demo {
+  OS config {
+    STATUS = EXTENDED;
+    PRETASKHOOK = TRUE;
+    POSTTASKHOOK = TRUE;
+    PAINT_STACK = TRUE;
+    PAINT_REGISTERS = TRUE;
+    
+    BUILD = TRUE {
+      TRAMPOLINE_BASE_PATH = "../../../../../..";
+      APP_SRC = "ADC.c";
+      APP_SRC = "FTM.c";
+      APP_SRC = "FlexCAN.c";
+      APP_SRC = "LPSPI.c";
+      APP_SRC = "LPUART.c";
+      APP_SRC = "apm_demo.c";
+      APP_NAME = "apm_demo_exe";
+      CFLAGS  = "-O0"; 
+      LDFLAGS = "-Map=apm_demo.map";
+      COMPILER = "arm-none-eabi-gcc";
+      ASSEMBLER = "arm-none-eabi-as";
+      LINKER = "arm-none-eabi-ld";
+      COPIER = "arm-none-eabi-objcopy";
+      SYSTEM = PYTHON;
+    };
+    SYSTEM_CALL = TRUE;
+    MEMMAP = TRUE {
+      COMPILER = gcc;
+      LINKER = gnu_ld { SCRIPT = "script.ld"; };
+      ASSEMBLER = gnu_as;
+      MEMORY_PROTECTION = FALSE;
+    };
+  };
+  
+  APPMODE std {};
+  
+  TASK apm_demo {
+    PRIORITY = 1;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+
+  ALARM apm_demo_apm_demo {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK {
+      TASK = apm_demo;
+    };
+    AUTOSTART = TRUE {
+      APPMODE = std;
+      ALARMTIME = 28;
+      CYCLETIME = 100;
+    };
+  };
+
+  TASK light_monitor {
+    PRIORITY = 2;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+  
+  ALARM apm_demo_light {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK {
+      TASK = light_monitor;
+    };
+    AUTOSTART = TRUE {
+      APPMODE = std;
+      ALARMTIME = 10;
+      CYCLETIME = 10;
+    };
+  };
+
+  TASK speed_monitor {
+    PRIORITY = 2;
+    AUTOSTART = FALSE;
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+  };
+  
+  ALARM apm_demo_speed {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK {
+      TASK = speed_monitor;
+    };
+    AUTOSTART = TRUE {
+      APPMODE = std;
+      ALARMTIME = 5;
+      CYCLETIME = 10;
+    };
+  };
+};
+

@@ -1,0 +1,7 @@
+CPU dk_autosar {
+  PLATFORM_FILES dk_autosar {
+    PATH = "cortex/armv7em/s32k144/dk_autosar";
+    CFILE = "tp.c";
+  };
+};
+    

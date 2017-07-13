@@ -100,7 +100,7 @@ FUNC (void, OS_CODE) tpl_init_machine_specific (void)
   /*
    * Switch to use PSP, unprivileged state
    */
-  __set_CONTROL(0x3);
+  //__set_CONTROL(0x3);
   /*
    * Instruction SynchronizationBarrier
    * Execute ISB after changing CONTROL (architectural recommendation)
